@@ -17,12 +17,12 @@ router.post('/send-email', async (req, res) => {
     try {
         const { name, email, phone, service, message, suburb, vehicleType, timing, notes } = req.body;
 
-        // Determine if this is a blue slip quote or general contact
+        // Determine if this is a pink slip quote or general contact
         const isBlueSlipQuote = suburb && vehicleType;
 
         // Validate required fields based on form type
         if (isBlueSlipQuote) {
-            // Blue slip quote form validation
+            // Pink slip quote form validation
             if (!name || !phone || !suburb || !vehicleType) {
                 return res.status(400).json({
                     error: 'Name, phone, suburb, and vehicle type are required'
@@ -53,7 +53,7 @@ router.post('/send-email', async (req, res) => {
                 <style>
                     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: #0F52BA; color: white; padding: 20px; border-radius: 5px 5px 0 0; }
+                    .header { background: #E91E63; color: white; padding: 20px; border-radius: 5px 5px 0 0; }
                     .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
                     .field { margin-bottom: 20px; }
                     .label { font-weight: bold; color: #1f2937; margin-bottom: 5px; }
@@ -65,7 +65,7 @@ router.post('/send-email', async (req, res) => {
             <body>
                 <div class="container">
                     <div class="header">
-                        <h2 style="margin: 0;">${isBlueSlipQuote ? '🚗 New Blue Slip Quote Request' : 'New Contact Form Submission'}</h2>
+                        <h2 style="margin: 0;">${isBlueSlipQuote ? '🚗 New Pink Slip Quote Request' : 'New Contact Form Submission'}</h2>
                     </div>
                     <div class="content">
                         <div class="field">
@@ -136,7 +136,7 @@ router.post('/send-email', async (req, res) => {
 
         // Plain text version
         const textContent = isBlueSlipQuote ? `
-New Blue Slip Quote Request
+New Pink Slip Quote Request
 
 Name: ${name}
 Phone: ${phone}
@@ -163,10 +163,10 @@ Received on ${new Date().toLocaleString()}
 
         // Email data
         const emailData = {
-            from: `Blue Slip Sydney <noreply@${process.env.MAILGUN_DOMAIN}>`,
+            from: `Pink Slip Sydney <noreply@${process.env.MAILGUN_DOMAIN}>`,
             to: process.env.RECIPIENT_EMAIL,
             subject: isBlueSlipQuote
-                ? `🚗 Blue Slip Quote: ${name} - ${suburb} (${vehicleType})${timing === 'today' || timing === 'tomorrow' ? ' - URGENT' : ''}`
+                ? `🚗 Pink Slip Quote: ${name} - ${suburb} (${vehicleType})${timing === 'today' || timing === 'tomorrow' ? ' - URGENT' : ''}`
                 : `New Contact: ${name}`,
             html: emailContent,
             text: textContent,
@@ -179,9 +179,9 @@ Received on ${new Date().toLocaleString()}
         // Send auto-reply to customer (only if they provided an email)
         if (email) {
             const autoReplyData = {
-                from: `Blue Slip Sydney <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                from: `Pink Slip Sydney <noreply@${process.env.MAILGUN_DOMAIN}>`,
                 to: email,
-                subject: 'Thank you for contacting Blue Slip Sydney',
+                subject: 'Thank you for contacting Pink Slip Sydney',
                 html: `
                     <!DOCTYPE html>
                     <html>
@@ -189,7 +189,7 @@ Received on ${new Date().toLocaleString()}
                         <style>
                             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                            .header { background: #0F52BA; color: white; padding: 20px; text-align: center; }
+                            .header { background: #E91E63; color: white; padding: 20px; text-align: center; }
                             .content { padding: 30px; background: #f9fafb; }
                             .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
                         </style>
@@ -197,13 +197,13 @@ Received on ${new Date().toLocaleString()}
                     <body>
                         <div class="container">
                             <div class="header">
-                                <h2 style="margin: 0;">Thank You for Contacting Blue Slip Sydney!</h2>
+                                <h2 style="margin: 0;">Thank You for Contacting Pink Slip Sydney!</h2>
                             </div>
                             <div class="content">
                                 <p>Hi ${name},</p>
                                 <p>Thank you for reaching out to us. We've received your message and will get back to you as soon as possible.</p>
                                 <p>For urgent inquiries, feel free to call us directly at <strong>(02) 9516 3366</strong> or SMS <strong>0412 785 767</strong>.</p>
-                                <p>Best regards,<br>Blue Slip Sydney Team</p>
+                                <p>Best regards,<br>Pink Slip Sydney Team</p>
                             </div>
                             <div class="footer">
                                 <p>This is an automated response. Please do not reply to this email.</p>
@@ -213,7 +213,7 @@ Received on ${new Date().toLocaleString()}
                     </body>
                     </html>
                 `,
-                text: `Hi ${name},\n\nThank you for reaching out to us. We've received your message and will get back to you as soon as possible.\n\nFor urgent inquiries, call (02) 9516 3366 or SMS 0412 785 767.\n\nBest regards,\nBlue Slip Sydney Team`
+                text: `Hi ${name},\n\nThank you for reaching out to us. We've received your message and will get back to you as soon as possible.\n\nFor urgent inquiries, call (02) 9516 3366 or SMS 0412 785 767.\n\nBest regards,\nPink Slip Sydney Team`
             };
 
             // Send auto-reply (don't wait for it, send in background)
@@ -231,7 +231,7 @@ Received on ${new Date().toLocaleString()}
 
     } catch (error) {
         console.error('Email sending error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to send email. Please try again later.',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
