@@ -102,7 +102,10 @@ class AIChat {
         document.body.classList.toggle('chat-open', this.isOpen);
 
         if (this.isOpen) {
-            this.chatInput.focus();
+            // Only auto-focus on desktop to prevent keyboard popping up on mobile
+            if (window.innerWidth > 768) {
+                this.chatInput.focus();
+            }
             // Track chat open event
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'chat_opened', {
