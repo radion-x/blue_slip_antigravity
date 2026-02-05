@@ -99,7 +99,8 @@ class AIChat {
     toggleChat() {
         this.isOpen = !this.isOpen;
         this.chatWindow.classList.toggle('hidden');
-        
+        document.body.classList.toggle('chat-open', this.isOpen);
+
         if (this.isOpen) {
             this.chatInput.focus();
             // Track chat open event
@@ -112,8 +113,8 @@ class AIChat {
     }
 
     handleOutsideClick(e) {
-        if (this.isOpen && 
-            !this.chatWindow.contains(e.target) && 
+        if (this.isOpen &&
+            !this.chatWindow.contains(e.target) &&
             !this.chatToggle.contains(e.target)) {
             this.toggleChat();
         }
@@ -122,14 +123,14 @@ class AIChat {
     addMessage(type, text) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${type}`;
-        
+
         // Format AI messages with markdown-like rendering
         if (type === 'ai') {
             messageDiv.innerHTML = this.formatMessage(text);
         } else {
             messageDiv.textContent = text;
         }
-        
+
         this.chatMessages.appendChild(messageDiv);
         this.scrollToBottom();
 
@@ -155,12 +156,12 @@ class AIChat {
             // Bullet points
             .replace(/^- (.+)$/gm, '<li>$1</li>')
             .replace(/^• (.+)$/gm, '<li>$1</li>');
-        
+
         // Wrap lists in ul tags
         if (formatted.includes('<li>')) {
             formatted = formatted.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
         }
-        
+
         return formatted;
     }
 
@@ -192,7 +193,7 @@ class AIChat {
 
     async handleSubmit(e) {
         e.preventDefault();
-        
+
         const message = this.chatInput.value.trim();
         if (!message) return;
 
@@ -214,7 +215,7 @@ class AIChat {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     message,
                     history: this.conversationHistory.slice(-10)
                 }),
@@ -222,7 +223,7 @@ class AIChat {
 
             // Check if streaming
             const contentType = response.headers.get('content-type');
-            
+
             if (contentType && contentType.includes('text/event-stream')) {
                 // Handle streaming response
                 await this.handleStreamingResponse(response);
@@ -235,7 +236,7 @@ class AIChat {
 
                 if (response.ok) {
                     this.addMessage('ai', data.response || data.message);
-                    
+
                     // Track successful chat interaction
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'chat_message_sent', {
@@ -277,7 +278,7 @@ class AIChat {
                 for (const line of lines) {
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
-                        
+
                         if (data === '[DONE]') {
                             // Stream complete - store in history
                             if (fullResponse) {
@@ -286,7 +287,7 @@ class AIChat {
                                     content: fullResponse
                                 });
                             }
-                            
+
                             // Track successful chat interaction
                             if (typeof gtag !== 'undefined') {
                                 gtag('event', 'chat_message_sent', {
@@ -299,7 +300,7 @@ class AIChat {
                         try {
                             const parsed = JSON.parse(data);
                             const content = parsed.choices?.[0]?.delta?.content;
-                            
+
                             if (content) {
                                 // Remove typing indicator on FIRST content
                                 if (!messageDiv) {
@@ -308,7 +309,7 @@ class AIChat {
                                     messageDiv.className = 'chat-message ai';
                                     this.chatMessages.appendChild(messageDiv);
                                 }
-                                
+
                                 fullResponse += content;
                                 // Format and display with HTML rendering
                                 messageDiv.innerHTML = this.formatMessage(fullResponse);
