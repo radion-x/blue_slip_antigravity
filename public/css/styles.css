@@ -367,7 +367,7 @@ nav {
 .hero {
     background: linear-gradient(135deg, rgba(197, 17, 98, 1) 0%, rgba(255, 64, 129, 1) 100%);
     color: white;
-    padding: var(--space-12) 0 var(--space-16);
+    padding: 10rem 0 10rem;
     position: relative;
     overflow: hidden;
 }
