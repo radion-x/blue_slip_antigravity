@@ -367,7 +367,7 @@ nav {
 .hero {
     background: linear-gradient(135deg, rgba(197, 17, 98, 1) 0%, rgba(255, 64, 129, 1) 100%);
     color: white;
-    padding: 10rem 0 10rem;
+    padding: 5rem 0 5rem;
     position: relative;
     overflow: hidden;
 }
@@ -501,7 +501,7 @@ nav {
 
 @media (min-width: 900px) {
     .hero {
-        padding: var(--space-20) 0;
+        padding: 6rem 0;
     }
 
     .hero-grid {
